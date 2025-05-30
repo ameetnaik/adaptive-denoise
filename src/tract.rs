@@ -517,6 +517,20 @@ impl DfTract {
 
     /// Process a noisy time domain sample and return the enhanced sample via mutable argument.
     pub fn process(&mut self, noisy: ArrayView2<f32>, mut enh: ArrayViewMut2<f32>) -> Result<f32> {
+        // Add dimension checks
+        if noisy.len_of(Axis(1)) != self.hop_size {
+            return Err(anyhow::anyhow!(
+                "Input chunk size {} doesn't match expected hop_size {}",
+                noisy.len_of(Axis(1)),
+                self.hop_size
+            ));
+        }
+        
+        // Check if the model is properly initialized
+        if self.rolling_spec_buf_y.is_empty() || self.rolling_spec_buf_x.is_empty() {
+            self.init()?;
+        }
+
         debug_assert_eq!(noisy.len_of(Axis(0)), enh.len_of(Axis(0)));
         debug_assert_eq!(noisy.len_of(Axis(1)), enh.len_of(Axis(1)));
         debug_assert_eq!(noisy.len_of(Axis(1)), self.hop_size);
@@ -593,7 +607,13 @@ impl DfTract {
         }
 
         // This spectrum will only be used for the upper frequecies
-        let spec = self.rolling_spec_buf_y.get_mut(self.df_order - 1).unwrap();
+        // let spec = self.rolling_spec_buf_y.get_mut(self.df_order - 1).unwrap();
+        let spec = if self.df_order > 0 {
+            self.rolling_spec_buf_y.get_mut(self.df_order - 1).unwrap()
+        } else {
+            self.rolling_spec_buf_y.get_mut(0).unwrap()
+        };
+
         self.spec_buf.clone_from(spec);
         if let Some(coefs) = coefs {
             df(
