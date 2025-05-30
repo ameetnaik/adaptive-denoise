@@ -453,6 +453,15 @@ dependencies = [
 
 [[package]]
 name = "itertools"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba291022dbbd398a455acf126c1e341954079855bc60dfdda641363bd6922569"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
@@ -647,6 +656,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73f88a1307638156682bada9d7604135552957b7818057dcef22705b4d509495"
 dependencies = [
  "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -935,7 +945,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust_nc"
+name = "rust-nc"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -943,6 +953,7 @@ dependencies = [
  "env_logger",
  "flate2",
  "hound",
+ "itertools 0.12.1",
  "log",
  "ndarray",
  "num-complex",
