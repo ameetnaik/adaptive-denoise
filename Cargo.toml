@@ -1,5 +1,5 @@
 [package]
-name = "rust_nc"
+name = "rust-nc"
 version = "0.1.0"
 edition = "2021"
 
@@ -18,10 +18,11 @@ tract-core = "0.20"
 tract-onnx = "0.20"
 tract-pulse = "0.20"
 rubato = "0.14"
-num-complex = "0.4"
-realfft = "3.3"
+realfft = "^3.1.0"
 time = "0.3.35"
 rust-ini = "0.21.1"
+num-complex = { version = "^0.4", features = ["serde"] }
+itertools = "0.12"
 
 [features]
 default = ["wav-utils"]
