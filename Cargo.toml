@@ -1,0 +1,28 @@
+[package]
+name = "rust_nc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] }
+hound = "3.5"
+anyhow = "1.0"
+ndarray = "0.15"
+log = "0.4"
+env_logger = "0.10"
+thiserror = "1.0"
+flate2 = "1.0"
+# rust-ini = "0.21"
+tar = "0.4"
+tract-core = "0.20"
+tract-onnx = "0.20"
+tract-pulse = "0.20"
+rubato = "0.14"
+num-complex = "0.4"
+realfft = "3.3"
+time = "0.3.35"
+rust-ini = "0.21.1"
+
+[features]
+default = ["wav-utils"]
+wav-utils = []
