@@ -1,1 +1,6 @@
+Cargo.lock
 /target
+
+*.wav
+*.zip
+*.tar.gz
