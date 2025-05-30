@@ -16,7 +16,17 @@ use tract_core::prelude::*;
 use tract_onnx::{prelude::*, tract_hir::shapefactoid};
 use tract_pulse::{internal::ToDim, model::*};
 
-use crate::*;
+use num_complex::Complex32;
+
+// At the top of tract.rs
+use crate::df::{
+    DFState, 
+    interp_band_gain, 
+    post_filter
+};
+
+use crate::transforms::*;
+use crate::wav_utils::*;
 
 #[derive(Clone)]
 pub struct DfParams {
