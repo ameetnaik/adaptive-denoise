@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
-#[cfg(feature = "timings")]
+// #[cfg(feature = "timings")]
 use std::time::Instant;
 
 use anyhow::{bail, Context, Result};
@@ -250,7 +250,7 @@ impl Default for DfTract {
 
 impl DfTract {
     pub fn new(dfp: DfParams, rp: &RuntimeParams) -> Result<Self> {
-        #[cfg(feature = "timings")]
+        // #[cfg(feature = "timings")]
         let t0 = Instant::now();
         let config = dfp.config;
         let model_cfg = config.section(Some("deepfilternet")).unwrap();
@@ -270,7 +270,7 @@ impl DfTract {
         let enc = SimpleState::new(enc.into_runnable()?)?;
         let erb_dec = SimpleState::new(erb_dec.into_runnable()?)?;
         let df_dec = SimpleState::new(df_dec.into_runnable()?)?;
-        #[cfg(feature = "timings")]
+        // #[cfg(feature = "timings")]
         let t1 = Instant::now();
 
         let sr = df_cfg.get("sr").unwrap().parse::<usize>()?;
@@ -370,7 +370,7 @@ impl DfTract {
             skip_counter: 0,
         };
         m.init()?;
-        #[cfg(feature = "timings")]
+        // #[cfg(feature = "timings")]
         log::info!(
             "Init DfTract in {:.2}ms (models in {:.2}ms)",
             t0.elapsed().as_secs_f32() * 1000.,
@@ -478,11 +478,12 @@ impl DfTract {
 
         let (apply_gains, apply_gain_zeros, apply_df) = self.apply_stages(lsnr);
 
-        log::trace!(
-            "Enhancing frame with lsnr {:>5.1} dB. Applying stage 1: {} and stage 2: {}.",
+        log::info!(
+            "Enhancing frame with lsnr {:>5.1} dB. Applying stage 1: {} and stage 2: {}. Apply gain zeroes: {}.",
             lsnr,
             apply_gains,
-            apply_df
+            apply_df,
+            apply_gain_zeros
         );
 
         let m = if apply_gains {
@@ -686,19 +687,20 @@ impl DfTract {
     ///     - apply_df: Local SNR is greater than `max_db_df_thresh` and the estimated DF coefs
     ///         should be applied
     pub fn apply_stages(&self, lsnr: f32) -> (bool, bool, bool) {
-        if lsnr < self.min_db_thresh {
-            // Only noise detected, just apply a zero mask
-            (false, true, false)
-        } else if lsnr > self.max_db_erb_thresh {
-            // Clean speech signal detected, don't apply any processing
-            (false, false, false)
-        } else if lsnr > self.max_db_df_thresh {
-            // Only little noisy signal detected, just apply 1st stage, skip DF stage
-            (true, false, false)
-        } else {
-            // Regular noisy signal detected, apply 1st and 2nd stage
-            (true, false, true)
-        }
+        (false, true, true)
+        // if lsnr < self.min_db_thresh {
+        //     // Only noise detected, just apply a zero mask
+        //     (false, true, false)
+        // } else if lsnr > self.max_db_erb_thresh {
+        //     // Clean speech signal detected, don't apply any processing
+        //     (false, false, false)
+        // } else if lsnr > self.max_db_df_thresh {
+        //     // Only little noisy signal detected, just apply 1st stage, skip DF stage
+        //     (true, false, false)
+        // } else {
+        //     // Regular noisy signal detected, apply 1st and 2nd stage
+        //     (true, false, true)
+        // }
     }
 
     pub fn set_spec_buffer(&mut self, spec: ArrayView2<f32>) -> Result<()> {

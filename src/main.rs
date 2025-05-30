@@ -158,14 +158,19 @@ fn main() -> Result<()> {
     }
     for file in args.files {
         let reader = ReadWav::new(file.to_str().unwrap())?;
+        log::info!("Reading file {:?}", file.to_str().unwrap());
+        
+        
         // Check if we need to adjust to multiple channels
         if r_params.n_ch != reader.channels {
+            log::info!("Multiple Channels Exist !!");
             r_params.n_ch = reader.channels;
             model = DfTract::new(df_params.clone(), &r_params)?;
             sr = model.sr;
         }
         let sample_sr = reader.sr;
         let mut noisy = reader.samples_arr2()?;
+        log::info!("Beginning sampling ...");
         if sr != sample_sr {
             noisy = resample(noisy.view(), sample_sr, sr, None).expect("Error during resample(resample()");
         }
