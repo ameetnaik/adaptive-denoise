@@ -21,12 +21,8 @@ use num_complex::Complex32;
 // At the top of tract.rs
 use crate::df::{
     DFState, 
-    interp_band_gain, 
     post_filter
 };
-
-use crate::transforms::*;
-use crate::wav_utils::*;
 
 #[derive(Clone)]
 pub struct DfParams {
@@ -82,22 +78,10 @@ impl DfParams {
 impl Default for DfParams {
     #[allow(unreachable_code)]
     fn default() -> Self {
-        #[cfg(feature = "default-model-ll")]
-        {
-            log::debug!("Loading model DeepFilterNet3_ll_onnx.tar.gz");
-            return DfParams::from_bytes(include_bytes!(
-                "./models/DeepFilterNet3_ll_onnx.tar.gz"
-            ))
-            .expect("Could not load model config");
-        }
-        #[cfg(feature = "default-model")]
-        {
-            log::debug!("Loading model DeepFilterNet3_onnx.tar.gz");
-            DfParams::from_bytes(include_bytes!("./models/DeepFilterNet3_onnx.tar.gz"))
-                .expect("Could not load model config")
-        }
-        #[cfg(not(feature = "default-model"))]
-        panic!("Not compiled with a default model")
+        return DfParams::from_bytes(include_bytes!(
+            "../models/DeepFilterNet3_ll_onnx.tar.gz"
+        ))
+        .expect("Could not load model config");
     }
 }
 
@@ -478,7 +462,7 @@ impl DfTract {
 
         let (apply_gains, apply_gain_zeros, apply_df) = self.apply_stages(lsnr);
 
-        log::info!(
+        log::trace!(
             "Enhancing frame with lsnr {:>5.1} dB. Applying stage 1: {} and stage 2: {}. Apply gain zeroes: {}.",
             lsnr,
             apply_gains,

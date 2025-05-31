@@ -3,38 +3,9 @@ use anyhow::Result;
 use clap::{Parser, ValueHint};
 use ndarray::{prelude::*, Axis};
 
-use rust_nc::df::{
-    DFState, 
-    UNIT_NORM_INIT, 
-    MEAN_NORM_INIT, 
-    median, 
-    band_mean_norm_erb, 
-    band_unit_norm, 
-    find_max, 
-    interp_band_gain, 
-    apply_interp_band_gain, 
-    compute_band_corr, 
-    band_compr, 
-    frame_analysis, 
-    frame_synthesis, 
-    post_filter
-};
-
 use rust_nc::transforms::*;
 use rust_nc::wav_utils::*;
 use rust_nc::tract::*;
-
-#[cfg(all(
-    not(windows),
-    not(target_os = "android"),
-    not(target_os = "macos"),
-    not(target_os = "freebsd"),
-    not(target_env = "musl"),
-    not(target_arch = "riscv64"),
-    feature = "use-jemalloc"
-))]
-#[global_allocator]
-static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 /// Simple program to sample from a hd5 dataset directory
 #[derive(Parser)]
@@ -142,8 +113,6 @@ fn main() -> Result<()> {
                 exit(1)
             }
         }
-    } else if cfg!(any(feature = "default-model", feature = "default-model-ll")) {
-        DfParams::default()
     } else {
         log::error!("deep-filter was not compiled with a default model. Please provide a model via '--model <path-to-model.tar.gz>'");
         exit(2)
@@ -177,15 +146,24 @@ fn main() -> Result<()> {
         let noisy = noisy.as_standard_layout();
         let mut enh: Array2<f32> = ArrayD::default(noisy.shape()).into_dimensionality()?;
         let t0 = Instant::now();
+
+        // add a progressbar here
+        let mut pb = pbr::ProgressBar::new(noisy.len_of(Axis(1)) as u64);
+        pb.format("╢▌▌░╟");
+        // let mut counter: u64 = 0;
+        
         for (ns_f, enh_f) in noisy
-            .view()
-            .axis_chunks_iter(Axis(1), model.hop_size)
-            .zip(enh.view_mut().axis_chunks_iter_mut(Axis(1), model.hop_size))
+        .view()
+        .axis_chunks_iter(Axis(1), model.hop_size)
+        .zip(enh.view_mut().axis_chunks_iter_mut(Axis(1), model.hop_size))
         {
             if ns_f.len_of(Axis(1)) < model.hop_size {
                 break;
             }
             model.process(ns_f, enh_f)?;
+            pb.add(model.hop_size as u64);
+            // counter += 1;
+            // log::info!("Counter {:?} hop size {}", counter, noisy.len_of(Axis(1)));
         }
         let elapsed = t0.elapsed().as_secs_f32();
         let t_audio = noisy.len_of(Axis(1)) as f32 / sr as f32;
