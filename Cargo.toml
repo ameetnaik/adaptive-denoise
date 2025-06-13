@@ -24,6 +24,7 @@ rust-ini = "0.21.1"
 num-complex = { version = "^0.4", features = ["serde"] }
 itertools = "0.12"
 pbr = "1.1.1"
+rust-embed = "8"
 
 [features]
 default = ["wav-utils"]

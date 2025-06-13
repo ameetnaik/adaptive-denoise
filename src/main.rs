@@ -6,14 +6,19 @@ use ndarray::{prelude::*, Axis};
 use rust_nc::transforms::*;
 use rust_nc::wav_utils::*;
 use rust_nc::tract::*;
+use rust_embed::RustEmbed;
+
+#[derive(RustEmbed)]
+#[folder = "models/"]
+struct Assets;
 
 /// Simple program to sample from a hd5 dataset directory
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// Path to model tar.gz
-    #[arg(short, long, value_hint = ValueHint::FilePath)]
-    model: Option<PathBuf>,
+    // #[arg(short, long, value_hint = ValueHint::FilePath)]
+    // model: Option<PathBuf>,
     /// Enable post-filter
     #[arg(long = "pf")]
     post_filter: bool,
@@ -105,18 +110,28 @@ fn main() -> Result<()> {
     } else {
         log::warn!("Input not valid for `reduce_mask`.")
     }
-    let df_params = if let Some(tar) = args.model.as_ref() {
-        match DfParams::new(tar.clone()) {
+
+    let df_params = if let Some(tar) = Assets::get("DeepFilterNet3_ll_onnx.tar.gz") {
+        match DfParams::from_bytes(&tar.data) {
             Ok(p) => p,
             Err(e) => {
-                log::error!("Error opening model {}: {}", tar.display(), e);
+                log::error!("Error opening model {}", e);
                 exit(1)
             }
         }
+        // match DfParams::new(tar.clone()) {
+        //     Ok(p) => p,
+        //     Err(e) => {
+        //         log::error!("Error opening model {}: {}", tar.display(), e);
+        //         exit(1)
+        //     }
+        // }
     } else {
         log::error!("deep-filter was not compiled with a default model. Please provide a model via '--model <path-to-model.tar.gz>'");
         exit(2)
     };
+        
+
     let mut model: DfTract = DfTract::new(df_params.clone(), &r_params)?;
     let mut sr = model.sr;
     let mut delay = model.fft_size - model.hop_size; // STFT delay
