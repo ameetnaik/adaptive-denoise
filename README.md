@@ -2,7 +2,7 @@
 
 # Rust Noise Cancellation with DeepFilterNet
 
-[![Rust](https://github.com/ameetnaik/adaptive-denoise/actions/workflows/rust.yml/badge.svg)](https://github.com/ameetnaik/adaptive-denoise/actions/workflows/rust.yml)
+[![Rust Build](https://github.com/ameetnaik/adaptive-denoise/actions/workflows/rust.yml/badge.svg)](https://github.com/ameetnaik/adaptive-denoise/actions/workflows/rust.yml)
 
 A Rust program that uses DeepFilterNet to cancel background noise and enhance speech in WAV audio files.
 
