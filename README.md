@@ -26,8 +26,8 @@ This tool allows you to easily denoise audio using DeepFilterNet's high-quality 
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/rust_nc.git
-cd rust_nc
+git clone https://github.com/ameetnaik/adaptive-denoise.git ad
+cd ad
 
 # Build the project
 cargo build --release
