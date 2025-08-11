@@ -3,9 +3,9 @@ use anyhow::Result;
 use clap::{Parser, ValueHint};
 use ndarray::{prelude::*, Axis};
 
-use rust_nc::transforms::*;
-use rust_nc::wav_utils::*;
-use rust_nc::tract::*;
+use ad::transforms::*;
+use ad::wav_utils::*;
+use ad::tract::*;
 use rust_embed::RustEmbed;
 
 #[derive(RustEmbed)]
@@ -64,9 +64,9 @@ struct Args {
         help = "Increase logging verbosity with multiple `-vv`",
     )]
     verbose: u8,
-    // Output directory with enhanced audio files. Defaults to 'out'
-    #[arg(short, long, default_value = "out", value_hint = ValueHint::DirPath)]
-    output_dir: PathBuf,
+    /// Output WAV file path
+    #[arg(short, long, value_hint = ValueHint::FilePath)]
+    output: PathBuf,
     /// Input WAV file path
     #[arg(short, long, value_hint = ValueHint::FilePath)]
     input: PathBuf,
@@ -136,9 +136,12 @@ fn main() -> Result<()> {
     let mut sr = model.sr;
     let mut delay = model.fft_size - model.hop_size; // STFT delay
     delay += model.lookahead * model.hop_size; // Add model latency due to lookahead
-    if !args.output_dir.is_dir() {
-        log::info!("Creating output directory: {}", args.output_dir.display());
-        std::fs::create_dir_all(args.output_dir.clone())?
+    // Create output directory if it doesn't exist
+    if let Some(parent) = args.output.parent() {
+        if !parent.exists() {
+            log::info!("Creating output directory: {}", parent.display());
+            std::fs::create_dir_all(parent)?
+        }
     }
     let file = args.input;
         let reader = ReadWav::new(file.to_str().unwrap())?;
@@ -165,6 +168,9 @@ fn main() -> Result<()> {
         // add a progressbar here
         let mut pb = pbr::ProgressBar::new(noisy.len_of(Axis(1)) as u64);
         pb.format("╢▌▌░╟");
+        pb.message("Processing: ");
+        pb.set_units(pbr::Units::Bytes);
+        pb.set_max_refresh_rate(Some(std::time::Duration::from_millis(100)));
         // let mut counter: u64 = 0;
         
         for (ns_f, enh_f) in noisy
@@ -188,13 +194,16 @@ fn main() -> Result<()> {
             elapsed,
             elapsed / t_audio
         );
-        let mut enh_file = args.output_dir.clone();
-        enh_file.push(file.file_name().unwrap());
+        let enh_file = args.output.clone();
         if args.compensate_delay {
             enh.slice_axis_inplace(Axis(1), ndarray::Slice::from(delay..));
         }
         if sr != sample_sr {
             enh = resample(enh.view(), sr, sample_sr, None).expect("Error during resample(resample()");
+        }
+        // Ensure we're writing to a file, not a directory
+        if enh_file.is_dir() {
+            return Err(anyhow::anyhow!("Output path is a directory, expected a file: {}", enh_file.display()));
         }
         write_wav_arr2(enh_file.to_str().unwrap(), enh.view(), sample_sr as u32)?;
 

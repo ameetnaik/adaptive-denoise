@@ -3,6 +3,32 @@
 version = 4
 
 [[package]]
+name = "ad"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "env_logger",
+ "flate2",
+ "hound",
+ "itertools 0.12.1",
+ "log",
+ "ndarray",
+ "num-complex",
+ "pbr",
+ "realfft",
+ "rubato",
+ "rust-embed",
+ "rust-ini",
+ "tar",
+ "thiserror 1.0.69",
+ "time",
+ "tract-core",
+ "tract-onnx",
+ "tract-pulse",
+]
+
+[[package]]
 name = "adler2"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1002,32 +1028,6 @@ dependencies = [
  "cfg-if",
  "ordered-multimap",
  "trim-in-place",
-]
-
-[[package]]
-name = "rust-nc"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "env_logger",
- "flate2",
- "hound",
- "itertools 0.12.1",
- "log",
- "ndarray",
- "num-complex",
- "pbr",
- "realfft",
- "rubato",
- "rust-embed",
- "rust-ini",
- "tar",
- "thiserror 1.0.69",
- "time",
- "tract-core",
- "tract-onnx",
- "tract-pulse",
 ]
 
 [[package]]
