@@ -217,7 +217,7 @@ pub struct DfTract {
     pub spec_buf: Tensor, // Real-valued spectrogram buffer of shape [n_ch, 1, 1, n_freqs, 2]
     erb_buf: TValue,      // Real-valued ERB feature buffer of shape [n_ch, 1, 1, n_erb]
     cplx_buf: TValue,     // Real-valued complex epectrum shape for DF of shape [n_ch, 1, nb_df, 2]
-    m_zeros: Vec<f32>,    // Preallocated buffer for applying a zero mask
+    _m_zeros: Vec<f32>,    // Preallocated buffer for applying a zero mask
     rolling_spec_buf_y: VecDeque<Tensor>, // Enhanced stage 1 spec buf
     rolling_spec_buf_x: VecDeque<Tensor>, // Noisy spec buf
     skip_counter: usize,  // Increment when wanting to skip processing due to low RMS
@@ -297,7 +297,7 @@ impl DfTract {
         let cplx_buf = TValue::from(unsafe {
             Tensor::uninitialized_dt(f32::datum_type(), &[1, 1, nb_df, 2])?
         });
-        let m_zeros = vec![0.; nb_erb];
+        let _m_zeros = vec![0.; nb_erb];
 
         let model_type = config.section(Some("train")).unwrap().get("model").unwrap();
         let lookahead = match model_type {
@@ -345,7 +345,7 @@ impl DfTract {
             spec_buf,
             erb_buf,
             cplx_buf,
-            m_zeros,
+            _m_zeros,
             rolling_spec_buf_y,
             rolling_spec_buf_x,
             df_states,
@@ -670,7 +670,7 @@ impl DfTract {
     ///         Zeros should be applied instead of the gain estimates.
     ///     - apply_df: Local SNR is greater than `max_db_df_thresh` and the estimated DF coefs
     ///         should be applied
-    pub fn apply_stages(&self, lsnr: f32) -> (bool, bool, bool) {
+    pub fn apply_stages(&self, _lsnr: f32) -> (bool, bool, bool) {
         (false, true, true)
         // if lsnr < self.min_db_thresh {
         //     // Only noise detected, just apply a zero mask
@@ -815,6 +815,7 @@ fn init_encoder_impl(
     let m = pulsed.into_typed()?.into_optimized()?;
     Ok(m)
 }
+#[allow(dead_code)]
 fn init_encoder(m: &Path, df_cfg: &ini::Properties, n_ch: usize) -> Result<TypedModel> {
     let m = tract_onnx::onnx().with_ignore_output_shapes(true).model_for_path(m)?;
     init_encoder_impl(m, df_cfg, n_ch)
@@ -922,6 +923,7 @@ fn init_erb_decoder_impl(
 
     Ok(m)
 }
+#[allow(dead_code)]
 fn init_erb_decoder(
     m: &Path,
     net_cfg: &ini::Properties,
@@ -983,6 +985,7 @@ fn init_df_decoder_impl(
     let m = pulsed.into_typed()?.into_optimized()?;
     Ok(m)
 }
+#[allow(dead_code)]
 fn init_df_decoder(
     m: &Path,
     net_cfg: &ini::Properties,

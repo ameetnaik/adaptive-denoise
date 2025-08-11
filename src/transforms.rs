@@ -36,6 +36,7 @@ pub enum TransformError {
     ResampleError(#[from] rubato::ResampleError),
 }
 
+#[allow(dead_code)]
 pub(crate) fn biquad_norm_inplace<'a, I>(xs: I, mem: &mut [f32; 2], b: &[f32; 2], a: &[f32; 2])
 where
     I: IntoIterator<Item = &'a mut f32>,
@@ -54,6 +55,7 @@ where
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn biquad_inplace<'a, I>(xs: I, mem: &mut [f32; 2], b: &[f32; 3], a: &[f32; 3])
 where
     I: IntoIterator<Item = &'a mut f32>,
@@ -73,6 +75,7 @@ where
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn mix_f(clean: ArrayView2<f32>, noise: ArrayView2<f32>, snr_db: f32) -> f32 {
     let e_clean = clean.iter().fold(0f32, |acc, x| acc + x.powi(2)) + 1e-10;
     let e_noise = noise.iter().fold(0f32, |acc, x| acc + x.powi(2)) + 1e-10;
@@ -81,18 +84,21 @@ pub(crate) fn mix_f(clean: ArrayView2<f32>, noise: ArrayView2<f32>, snr_db: f32)
 }
 
 #[inline]
+#[allow(dead_code)]
 pub(crate) fn rms_normalize(x: Array2<f32>) -> Array2<f32> {
     let rms = x.map(|x| x.powi(2)).mean_axis(Axis(1)).unwrap().map(|x| x.sqrt() + 1e-8);
     let ch = x.len_of(Axis(0));
     x / rms.to_shape([ch, 1]).unwrap()
 }
 
+#[allow(dead_code)]
 pub(crate) struct FftTransform {
     pub planer: RealFftPlanner<f32>,
     pub scratch: Vec<Complex32>,
 }
 
 impl FftTransform {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         FftTransform {
             planer: RealFftPlanner::<f32>::new(),
@@ -379,6 +385,7 @@ pub fn unit_norm(
 }
 
 /// Low pass by resampling the data to `f_cut_off*2`.
+#[allow(dead_code)]
 pub(crate) fn low_pass_resample(
     x: ArrayView2<f32>,
     f_cut_off: usize,
@@ -461,6 +468,7 @@ pub fn resample(
 ///   - `cbin`: Bin of cut-of-frequency. Frequencies above will get extended based on lower Frequencies.
 ///   - `sr`: Original time-domain sampling rate.
 ///   - `n_bins_overlap`: Instead of starting at bin correspinging to `freq` start `n_bins_overlap` lower.
+#[allow(dead_code)]
 pub(crate) fn ext_bandwidth_spectral(
     x: &mut Array3<Complex32>,
     mut cbin: usize,
@@ -495,6 +503,7 @@ pub(crate) fn ext_bandwidth_spectral(
     }
 }
 
+#[allow(dead_code)]
 fn bw_filterbank(center_freqs: &[f32], cutoff_bins: &[f32; 8]) -> Result<Array2<f32>> {
     // fb for bands [0-8, 8-10, 10-12, 12-16, 16-18, 18-20, 20-22, 22-24] kHz.
     // assumes 48 kHz sampling rate.
@@ -549,6 +558,7 @@ pub fn rfftfreqs(n: usize, sr: usize) -> Vec<f32> {
 ///     - `sr`: Sampling rate of the non-downampled time-domain signal
 ///     - `db_cut_off`: Energy threshold (e.g. `120.`)
 ///     - `window_size`: Window length in samples to estimate bandwidth
+#[allow(dead_code)]
 pub(crate) fn estimate_bandwidth(
     input: ArrayView3<Complex32>,
     sr: usize,

@@ -29,4 +29,7 @@ rust-embed = "8"
 [features]
 default = ["wav-utils"]
 wav-utils = []
+capi = []
+default-model = []
+dataset = []
 

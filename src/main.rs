@@ -67,9 +67,9 @@ struct Args {
     // Output directory with enhanced audio files. Defaults to 'out'
     #[arg(short, long, default_value = "out", value_hint = ValueHint::DirPath)]
     output_dir: PathBuf,
-    // Audio files
-    #[arg(required = true)]
-    files: Vec<PathBuf>,
+    /// Input WAV file path
+    #[arg(short, long, value_hint = ValueHint::FilePath)]
+    input: PathBuf,
 }
 
 fn main() -> Result<()> {
@@ -140,7 +140,7 @@ fn main() -> Result<()> {
         log::info!("Creating output directory: {}", args.output_dir.display());
         std::fs::create_dir_all(args.output_dir.clone())?
     }
-    for file in args.files {
+    let file = args.input;
         let reader = ReadWav::new(file.to_str().unwrap())?;
         log::info!("Reading file {:?}", file.to_str().unwrap());
         
@@ -197,7 +197,6 @@ fn main() -> Result<()> {
             enh = resample(enh.view(), sr, sample_sr, None).expect("Error during resample(resample()");
         }
         write_wav_arr2(enh_file.to_str().unwrap(), enh.view(), sample_sr as u32)?;
-    }
 
     Ok(())
 }
