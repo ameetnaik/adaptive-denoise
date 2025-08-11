@@ -109,22 +109,22 @@ This Rust implementation:
 - Uses Rust for speed and safety
 - Integrates only the model inference portion of DeepFilterNet, not the training pipeline
 
-## Acknowledgements
-
-This project builds upon **[DeepFilterNet](https://github.com/Rikorose/DeepFilterNet)**  
-Copyright (c) 2021 Reinhard Köhler  
-Licensed under the [MIT License](https://github.com/Rikorose/DeepFilterNet/blob/main/LICENSE).
-
-DeepFilterNet is an excellent real-time speech enhancement project that uses deep learning to remove background noise from speech audio.  
-This repository provides a Rust CLI wrapper to run inference on `.wav` files using DeepFilterNet.
-
 ---
 
 ## License
 
-This project is licensed under the MIT License.  
-See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 > **Note:** The `LICENSE` file in this repository contains:
 > - The MIT License for this Rust CLI implementation (© 2025 Ameet Naik)
 > - The MIT License for DeepFilterNet (© 2021 Reinhard Köhler)
+
+---
+
+## Acknowledgements
+
+This project builds upon **[DeepFilterNet](https://github.com/Rikorose/DeepFilterNet)** from Reinhard Köhler Copyright (c) 2021 
+Licensed under the [MIT License](https://github.com/Rikorose/DeepFilterNet/blob/main/LICENSE).
+
+DeepFilterNet is an excellent real-time speech enhancement project that uses deep learning to remove background noise from speech audio.  
+This repository provides a Rust CLI wrapper to run inference on `.wav` files using DeepFilterNet.
