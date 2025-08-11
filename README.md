@@ -2,6 +2,8 @@
 
 # Rust Noise Cancellation with DeepFilterNet
 
+[![Build Status](https://travis-ci.org/yourusername/adaptive-denoise.svg?branch=main)](https://travis-ci.org/yourusername/adaptive-denoise)
+
 A Rust program that uses DeepFilterNet to cancel background noise and enhance speech in WAV audio files.
 
 A Rust-based command-line interface for applying [DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) noise suppression to `.wav` files.  
@@ -33,12 +35,22 @@ cargo build --release
 
 ## Usage
 
+### Local Build
 ```bash
 # Basic usage
 cargo run --release -- -i input.wav -o output.wav
 
 # Or using the compiled binary
-./target/release/rust_nc -i input.wav -o output.wav
+./target/release/ad -i input.wav -o output.wav
+```
+
+### Docker
+```bash
+# Build the Docker image
+docker build -t adaptive-denoise .
+
+# Run with Docker (mount current directory)
+docker run --rm -v $(pwd):/data adaptive-denoise -i /data/input.wav -o /data/output.wav
 ```
 
 ### Command-line Options
@@ -47,6 +59,12 @@ cargo run --release -- -i input.wav -o output.wav
 - `-o, --output <FILE>`: Output WAV file path (required)
 - `--pf`: Enable post-filter for better noise reduction
 - `--pf-beta <FLOAT>`: Post-filter beta value (default: 0.02). Higher values result in stronger noise attenuation
+- `-v, --verbose`: Increase logging verbosity (use multiple times for more detail)
+- `-a, --atten-lim-db <FLOAT>`: Attenuation limit in dB (default: 100.0)
+- `--min-db-thresh <FLOAT>`: Min dB local SNR threshold (default: -15.0)
+- `--max-db-erb-thresh <FLOAT>`: Max dB local SNR threshold for ERB decoder (default: 35.0)
+- `--max-db-df-thresh <FLOAT>`: Max dB local SNR threshold for DF decoder (default: 35.0)
+- `-D, --compensate-delay`: Compensate delay of STFT and model lookahead
 
 ## Technical Details
 
@@ -55,6 +73,9 @@ cargo run --release -- -i input.wav -o output.wav
 - DeepFilterNet works best with 48kHz sample rate audio
 - The audio is processed through the DeepFilterNet model for noise cancellation and speech enhancement
 - The enhanced audio is saved to the specified output file in 16-bit PCM format
+- Progress is displayed during processing showing the amount of audio processed
+- Supports both single-channel and multi-channel audio files
+- Automatic resampling when input sample rate differs from model requirements
 
 ## Dependencies
 
@@ -62,12 +83,20 @@ cargo run --release -- -i input.wav -o output.wav
 - `hound`: For reading and writing WAV files
 - `clap`: For command-line argument parsing
 - `anyhow`: For error handling
+- `ndarray`: For multi-dimensional array operations
+- `tract-core`, `tract-onnx`, `tract-pulse`: For ONNX model inference
+- `rubato`: For audio resampling
+- `pbr`: For progress bar display
+- `rust-embed`: For embedding model files
 
 ## Notes
 
-- The first time you run the program, it will download the DeepFilterNet model, which might take a moment depending on your internet connection
+- The DeepFilterNet model is embedded in the binary, so no internet connection is required
 - For best results, use input audio with a 48kHz sample rate
-- The program automatically converts audio to mono as DeepFilterNet processes single-channel audio
+- The program automatically converts multi-channel audio to mono for processing
+- Processing time depends on audio length and system performance
+- Use `-v` flag for verbose output to monitor processing details
+- The program creates output directories automatically if they don't exist
 
 ---
 
