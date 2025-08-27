@@ -22,6 +22,18 @@ This tool allows you to easily denoise audio using DeepFilterNet's high-quality 
 - 🤿 Optional post-filter for enhanced noise reduction
 - ❌ Comprehensive error handling with helpful messages
 
+## Audio Samples
+
+Listen to the before and after results of noise cancellation:
+
+| Sample | Original (with noise) | Denoised |
+|--------|----------------------|----------|
+| Test Case 1 | <audio controls><source src="noise_sample1.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls><source src="output1.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+| Test Case 2 | <audio controls><source src="noise_sample2.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls><source src="output2.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+
+*Use the audio controls above to play and compare the original noisy audio with the denoised version.*
+
+
 ## Installation
 
 ```bash
