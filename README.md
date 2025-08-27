@@ -28,10 +28,10 @@ Listen to the before and after results of noise cancellation:
 
 | Sample | Original (with noise) | Denoised |
 |--------|----------------------|----------|
-| Test Case 1 | <audio controls><source src="noise_sample1.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls><source src="output1.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
-| Test Case 2 | <audio controls><source src="noise_sample2.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls><source src="output2.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+| Test Case 1 | [🔊 Download noise_sample1.wav](noise_sample1.wav) | [🔊 Download output1.wav](output1.wav) |
+| Test Case 2 | [🔊 Download noise_sample2.wav](noise_sample2.wav) | [🔊 Download output2.wav](output2.wav) |
 
-*Use the audio controls above to play and compare the original noisy audio with the denoised version.*
+*Download the audio files above and play them locally to hear the difference in audio quality.*
 
 
 ## Installation
